@@ -1,6 +1,10 @@
-import { Calendar, Image, Users } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Image, Users, ChevronDown, ChevronUp } from 'lucide-react';
 
 function PhotoCard({ photo }) {
+  const [showAllPeople, setShowAllPeople] = useState(false);
+  const INITIAL_PEOPLE_COUNT = 5;
+
   const formatDate = (date) => {
     if (!date) return null;
     return new Date(date).toLocaleDateString('nl-NL', {
@@ -22,6 +26,12 @@ function PhotoCard({ photo }) {
     }
     return 'Datum onbekend';
   };
+
+  const displayedPeople = showAllPeople 
+    ? photo.people 
+    : photo.people?.slice(0, INITIAL_PEOPLE_COUNT);
+  
+  const hasMorePeople = photo.people && photo.people.length > INITIAL_PEOPLE_COUNT;
 
   return (
     <div className="group bg-slate-900/30 hover:bg-slate-900/50 border-2 border-slate-700 hover:border-indigo-500/50 rounded-2xl overflow-hidden transition-all duration-300">
@@ -58,7 +68,7 @@ function PhotoCard({ photo }) {
               </span>
             </div>
             <div className="flex flex-wrap gap-1">
-              {photo.people.map((person) => (
+              {displayedPeople.map((person) => (
                 <span
                   key={person.personId}
                   className="inline-block px-2 py-1 bg-indigo-500/20 text-indigo-300 text-xs rounded-md font-medium border border-indigo-500/30"
@@ -67,6 +77,26 @@ function PhotoCard({ photo }) {
                 </span>
               ))}
             </div>
+            
+            {/* Show More/Less Button */}
+            {hasMorePeople && (
+              <button
+                onClick={() => setShowAllPeople(!showAllPeople)}
+                className="flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-2"
+              >
+                {showAllPeople ? (
+                  <>
+                    <ChevronUp size={14} />
+                    Toon minder
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown size={14} />
+                    Toon {photo.people.length - INITIAL_PEOPLE_COUNT} meer
+                  </>
+                )}
+              </button>
+            )}
           </div>
         )}
       </div>
